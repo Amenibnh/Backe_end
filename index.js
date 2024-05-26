@@ -14,6 +14,7 @@ const  passwordRoutes = require('./routers/Password.routes')
 const dailypassRoutes=require('./routers/DailyPass.routes')
 const  associationRoutes = require('./routers/association.routes');
 const  operaitonRoutes = require('./routers/Operation.routes');
+const  siteRoutes = require('./routers/site.routes');
 const { schedule } = require("./controllers/scheduler");
 //
 
@@ -45,6 +46,7 @@ app.use(passwordRoutes)
 app.use(associationRoutes)
 app.use(dailypassRoutes)
 app.use(operaitonRoutes)
+app.use(siteRoutes)
 app.use('/uploads', express.static('uploads'))
 
 // app.use(express.static(path.join(__dirname, "public")));

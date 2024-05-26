@@ -464,6 +464,7 @@ const AssociationContoller = {
           select: "-password",
         },
      ]);
+       console.log('Association:', associations);
 
       if (!associations || associations.length === 0) {
         res.status(404).json({ message: "Aucune association non trouvée." });

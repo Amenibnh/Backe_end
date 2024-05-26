@@ -10,13 +10,13 @@ const AssociationSchema = new mongoose.Schema({
     required: false
   },
   responsable: {
-    type: mongoose.Schema.Types.String,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
     unique:true
   },
   admin: {
-    type: mongoose.Schema.Types.String,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
     unique:true
@@ -40,7 +40,13 @@ const AssociationSchema = new mongoose.Schema({
   zip_code: {
     type: String,
     required: false
-  }
+  },
+  url:[
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref:'Site',
+    }
+  ]
 
 });
 module.exports = mongoose.model('Association', AssociationSchema);

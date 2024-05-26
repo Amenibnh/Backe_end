@@ -10,14 +10,14 @@ const verifyAdminGlobal = (req, res, next) => {
 
 //
 const verifyAdmin = (req, res, next) => {
-    if (req.user.role !== 'admin' && req.user.role !== 'adminGlobal') {
+    if ((req.user.role !== 'admin') && (req.user.role !== 'adminGlobal')) {
         return res.status(403).json({ message: 'Forbidden!' })
     }
     next()
 }
 
 const verifyResponsable = (req, res, next) => {
-    if (req.user.role !== 'responsable' && req.user.role !== 'adminGlobal') {
+    if ((req.user.role !== 'responsable') && (req.user.role !== 'adminGlobal')&&(req.user.role !== 'admin')) {
         return res.status(403).json({ message: 'Forbidden!' })
     }
     next()

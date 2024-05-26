@@ -4,7 +4,7 @@ const Pass = require('../model/dailyPass')
 const schedule = async ()=>{
     cron.schedule('0 0 * * *', async () => {
         try {
-            await Pass.updateMany({}, { pass: 0 });
+            await Pass.updateMany({}, { pass: 3 });
             console.log('Pass restaurer avec succee.');
         } catch (err) {
             console.error('Error:');
