@@ -1,7 +1,10 @@
 const express = require("express");
+const path = require('path');
+const bodyParser = require('body-parser');
 const morgan=require("morgan")
 const mongoose = require("mongoose");
-const path = require('path');
+
+// const vhost=require('vhost');
 
 // Importer le module cors pour gérery les requêtes Cross-Origin Resource Sharing (CORS)
 const cors = require("cors");
@@ -20,7 +23,6 @@ const { schedule } = require("./controllers/scheduler");
 
 //create an instance of the Express application
 const app = express()
-
 //Middleware for JSON parsing
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -66,7 +68,7 @@ mongoose.connect("mongodb://localhost:27017/distribution_repas_handicapes", {
   console.log(`Error while connecting to database.${err}`);
 });
 
-// restaurer le pass à 0 chaque jours
+// restaurer le pass à 3 chaque jours
 schedule()
 
 
