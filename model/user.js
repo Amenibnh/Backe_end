@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const association = require("./association");
 
 
 const userSchema = new mongoose.Schema({
@@ -33,7 +34,12 @@ const userSchema = new mongoose.Schema({
     type:Number,
         min:[0,'Le pass doit etre superieur ou égale à 0'],
         default:0,
-  }
+  },
+  association:{
+    type:mongoose.Schema.Types.ObjectId,
+     ref:'Association',
+    },
+  
 
 });
 

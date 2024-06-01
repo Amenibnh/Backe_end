@@ -69,7 +69,21 @@ const usersContoller = {
       const secretKey = 'your-secret-key';
       // Si le mot de passe est correct, générer un token JWT
       const token = jwt.sign({ userId: user._id, role: user.role, usage: user.usage, period: user.period }, secretKey);
-      return res.status(202).json({/* user,*/ token, role: user.role });
+      const userResponse = {
+        email: user.email,
+        firstname: user.firstname,
+        association: user.association ? user.association._id : null,
+        phone: user.phone,
+        profileImage: user.profileImage,
+        country: user.country,
+        registered: user.registered
+      };
+  
+      return res.status(202).json({
+        user: userResponse,
+        token,
+        role: user.role
+      });
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
@@ -323,7 +337,7 @@ const usersContoller = {
           gender,
           country,
           disabilityType,
-          repasRecu:0
+          repasRecu:0,
         })
 
         // Générer le sel et hacher le mot de passe
@@ -353,6 +367,8 @@ const usersContoller = {
                 console.error("Association non trouvée.");
                 return res.status(404).json({ message: "Association non trouvée." });
             }
+            newUser.association=association._id;
+            await newUser.save();
         }
 
         return res.status(200).json({ message: "L'utilisateur a été ajouté avec succès", newUser });
