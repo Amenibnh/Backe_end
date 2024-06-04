@@ -30,8 +30,8 @@ router.route('/currentResponsable').get(verifyToken,associationContoller.current
 router.route('/getResponsableAssociationDetails/:id').get(verifyToken,associationContoller.getResponsableAssociationDetails)
 router.route('/addPatientPass/:id').post(verifyToken,verifyResponsable,associationContoller.addPatientPass)
 router.route('/deletePatientPass/:id').delete(verifyToken,verifyResponsable,associationContoller.deletePatientPass)
-//afficher par country une personne en difficulte
-// router.route('/getPatientAssociationByCountry/:country').get(verifyToken,verifyResponsable,associationContoller.getPatientAssociationByCountry)
+//afficher par ville une personne en difficulte
+// router.route('/getPatientAssociationByville/:ville').get(verifyToken,verifyResponsable,associationContoller.getPatientAssociationByville)
 
 //patient
 router.route('/getPatientAssociationDetails/:id').get(verifyToken,associationContoller.getPatientAssociationDetails)

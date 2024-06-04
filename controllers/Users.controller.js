@@ -75,7 +75,7 @@ const usersContoller = {
         association: user.association ? user.association._id : null,
         phone: user.phone,
         profileImage: user.profileImage,
-        country: user.country,
+        ville: user.ville,
         registered: user.registered
       };
   
@@ -241,7 +241,7 @@ const usersContoller = {
       existingUser.repeatpassword = req.body.repeatpassword || existingUser.repeatpassword;
       existingUser.email = req.body.email || existingUser.email;
       existingUser.role = req.body.role || existingUser.role;
-      existingUser.country = req.body.country || existingUser.country;
+      existingUser.ville = req.body.ville || existingUser.ville;
       existingUser.phone = req.body.phone || existingUser.phone;
       existingUser.profileImage = file?.filename ?? existingUser.profileImage
       // Enregistrer le user mis à jour dans la base de données
@@ -298,9 +298,13 @@ const usersContoller = {
       var salt = bcrypt.genSaltSync(10);
 
       // Extraire les données de la requête body (destructuration)
-      const { firstname, lastname, password, repeatpassword, email, role, address, country, phone, gender,disabilityType } = req.body
+      const { firstname, lastname, password, repeatpassword, email, role, address, ville, phone, gender,disabilityType,secretKey } = req.body
 
-
+      if ((role === 'admin' && secretKey !== 'admin') ||
+        (role === 'responsable' && secretKey !== 'responsable') ||
+        (role === 'adminGlobal' && secretKey !== 'adminGlobal')) {
+      return res.status(400).json({ message: "Invalid secret key for this role." });
+    }
       // Définir le nombre de tours pour le hachage du mot de passe
       const saltRounds = 10;
 
@@ -335,11 +339,13 @@ const usersContoller = {
             day: "numeric",
           }),
           gender,
-          country,
+          ville,
           disabilityType,
-          repasRecu:0,
         })
-
+        if(role === 'user'){
+          newUser.repasRecu= 0;
+          await newUser.save();
+        }
         // Générer le sel et hacher le mot de passe
         bcrypt.genSalt(saltRounds);
         const hashedPassword = await bcrypt.hash(password, salt);
@@ -348,7 +354,7 @@ const usersContoller = {
         user.password = hashedPassword;
         // Enregistrer l'utilisateur dans la base de données
         const newUser = await user.save();
-
+        if(role==='user'){
         const qrData = await generateQRData(newUser._id);
         // Mettez à jour le champ QRData de l'utilisateur avec la valeur générée
         newUser.qrdata = qrData; // Utilisez qrData, pas qrdata
@@ -356,9 +362,9 @@ const usersContoller = {
         
 
         // Si l'utilisateur a choisi un pays lors de l'inscription, ajoutez cet utilisateur à la liste des patients de l'association correspondante
-        if (country ) {
+        if (ville ) {
             const association = await Association.findOneAndUpdate(
-                { country }, // Rechercher une association avec le même pays
+                { ville }, // Rechercher une association avec le même pays
                 { $push: { patients: newUser._id } }, // Ajouter l'utilisateur à la liste des patients
                 { new: true }
             );
@@ -370,7 +376,7 @@ const usersContoller = {
             newUser.association=association._id;
             await newUser.save();
         }
-
+      }
         return res.status(200).json({ message: "L'utilisateur a été ajouté avec succès", newUser });
       }
     } catch (error) {

@@ -126,7 +126,7 @@ const AssociationContoller = {
 
   addpatient: async (req, res) => {
     try {
-      const { firstname, lastname, password, repeatpassword, email, address, country, phone, gender, disabilityType } = req.body;
+      const { firstname, lastname, password, repeatpassword, email, address, ville, phone, gender, disabilityType } = req.body;
 
       // Vérifiez si le mot de passe et le mot de passe répété correspondent
       if (password !== repeatpassword) {
@@ -141,7 +141,7 @@ const AssociationContoller = {
         email,
         role:'user',
         address,
-        country,
+        ville,
         phone,
         gender,
         disabilityType
@@ -158,9 +158,9 @@ const AssociationContoller = {
       await newUser.save();
 
       // Si l'utilisateur a choisi un pays lors de l'inscription, ajoutez cet utilisateur à la liste des patients de l'association correspondante
-      if (country) {
+      if (ville) {
         const association = await Association.findOneAndUpdate(
-          { country }, // Rechercher une association avec le même pays
+          { ville }, // Rechercher une association avec le même pays
           { $push: { patients: newUser._id } }, // Ajouter l'utilisateur à la liste des patients
           { new: true }
         );
@@ -219,7 +219,7 @@ const AssociationContoller = {
       lastname,
       email,
       address,
-      country,
+      ville,
       phone,
       gender,
       disabilityType
@@ -237,7 +237,7 @@ const AssociationContoller = {
       if (lastname) user.lastname = lastname;
       if (email) user.email = email;
       if (address) user.address = address;
-      if (country) user.country = country;
+      if (ville) user.ville = ville;
       if (phone) user.phone = phone;
       if (gender) user.gender = gender;
       if (disabilityType) user.disabilityType = disabilityType;
@@ -381,12 +381,12 @@ const AssociationContoller = {
 
 
   ,
-//   getPatientAssociationByCountry: async (req, res) => {
+//   getPatientAssociationByville: async (req, res) => {
 //     try {
-//         const { country } = req.params; 
+//         const { ville } = req.params; 
 
 //         const patientsByCity = await Association.aggregate([
-//             { $match: { country } }, // Filtrer les associations par pays
+//             { $match: { ville } }, // Filtrer les associations par pays
 //             { $unwind: "$patients" }, // Déplier le tableau de patients
 //             {
 //                 $lookup: {
@@ -399,7 +399,7 @@ const AssociationContoller = {
 //             { $unwind: "$patientInfo" }, // Déplier les informations du patient
 //             {
 //                 $group: {
-//                     _id: "$patientInfo.country", // Regrouper les patients par ville
+//                     _id: "$patientInfo.ville", // Regrouper les patients par ville
 //                     patients: { $addToSet: "$patientInfo" } // Ajouter les patients à un tableau sans doublons
 //                 }
 //             }
@@ -511,7 +511,7 @@ const AssociationContoller = {
         responsable: association.responsable ? association.responsable.email : null,
         admin: association.admin ? association.admin.email : null,
         patients: association.patients,
-        country: association.country,
+        ville: association.ville,
         region: association.region,
         zip_code: association.zip_code,
         __v: association.__v
@@ -528,8 +528,8 @@ const AssociationContoller = {
   ,
   addAssociation: async (req, res) => {
     try {
-      const { name, description, responsable, admin, country, region, zip_code } = req.body;
-      const existingAssociation=await Association.findOne({country});
+      const { name, description, responsable, admin, ville, region, zip_code } = req.body;
+      const existingAssociation=await Association.findOne({ville});
       if(existingAssociation){
         return res.status(400).json({ message: "Cette association existe déjà!" });
       }
@@ -547,7 +547,7 @@ const AssociationContoller = {
         description,
         responsable:responsableUser._id,
         admin:adminUser._id,
-        country,
+        ville,
         region,
         zip_code
       });
@@ -583,7 +583,7 @@ const AssociationContoller = {
       existingAssociation.description = req.body.description || existingAssociation.description;
       existingAssociation.responsable = responsableUser ? responsableUser._id : existingAssociation.responsable;
       existingAssociation.admin = adminUser ? adminUser._id : existingAssociation.admin;
-      existingAssociation.country = req.body.country || existingAssociation.country;
+      existingAssociation.ville = req.body.ville || existingAssociation.ville;
       existingAssociation.region = req.body.region || existingAssociation.region;
       existingAssociation.zip_code = req.body.zip_code || existingAssociation.zip_code;
 

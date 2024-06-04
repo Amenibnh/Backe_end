@@ -1,4 +1,3 @@
-const mongoose = require("mongoose");
 const Site = require("../model/Site");
 const Association = require("../model/association");
 
@@ -14,7 +13,7 @@ const siteController = {
       }
 
       // Générer un sous-domaine unique pour l'association
-      const subdomain = `${association.country.toLowerCase().replace(/\s+/g, '')}.localhost`;
+      const subdomain = `${association.ville.toLowerCase().replace(/\s+/g, '')}.localhost`;
   
       // Créer un nouveau site avec le sous-domaine généré
       const newSite = new Site({

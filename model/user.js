@@ -12,8 +12,9 @@ const userSchema = new mongoose.Schema({
     enum: ['user', 'admin', 'responsable', 'adminGlobal'],
     default: 'user'
   },
+  secretKey: { type: String, required: false },
   address: { type: String, required: false },
-  country: { type: String, required: false },
+  ville: { type: String, required: false },
   phone: { type: String, required: false },
   profileImage: { type: String, required: false, default: "default-user-icon-8.jpg" },
   qrdata: { type: String, required: false },
@@ -24,7 +25,7 @@ const userSchema = new mongoose.Schema({
   period: { type: String, required: false }, // Période
   sessions: { type: Number, default: 0 }, // Nombre total de connexion
   gender: { type: String, enum: ['Male', 'Female'] },
-  disabilityType: { type: String, enum: ['physical', 'visual', 'hearing', 'cognitive'] },
+  disabilityType: { type: String, enum: ['physical', 'visual', 'hearing', 'cognitive'] , required: false},
   status: {
     type: String,
     enum: ['connected', 'disconnected'],

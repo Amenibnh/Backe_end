@@ -15,10 +15,11 @@ const cors = require("cors");
 const  usersRoutes = require('./routers/Users.routes')
 const  passwordRoutes = require('./routers/Password.routes')
 const dailypassRoutes=require('./routers/DailyPass.routes')
-const  associationRoutes = require('./routers/association.routes');
+const  associationRoutes = require('./routers/Association.routes');
 const  operaitonRoutes = require('./routers/Operation.routes');
-const  siteRoutes = require('./routers/site.routes');
-const { schedule } = require("./controllers/scheduler");
+const  siteRoutes = require('./routers/Site.routes');
+const  FournisseurRoutes = require('./routers/Fournisseur.routes');
+ const { schedule } = require("./controllers/scheduler");
 //
 
 //create an instance of the Express application
@@ -49,6 +50,7 @@ app.use(associationRoutes)
 app.use(dailypassRoutes)
 app.use(operaitonRoutes)
 app.use(siteRoutes)
+app.use(FournisseurRoutes)
 app.use('/uploads', express.static('uploads'))
 
 // app.use(express.static(path.join(__dirname, "public")));

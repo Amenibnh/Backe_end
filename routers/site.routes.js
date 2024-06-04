@@ -1,5 +1,5 @@
 const express = require('express');
-const siteController = require('../controllers/Site.controller');
+const siteController = require('../controllers/site.controller');
 const { verifyToken, verifyAdmin, verifyResponsable, verifyAdminGlobal } = require('../Middleware/middleware');
 const {verifySubdomain} =require('../Middleware/subdomain');
 const router = express.Router()
