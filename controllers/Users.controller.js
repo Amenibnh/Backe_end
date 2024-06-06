@@ -304,7 +304,11 @@ const usersContoller = {
         (role === 'responsable' && secretKey !== 'responsable') ||
         (role === 'adminGlobal' && secretKey !== 'adminGlobal')) {
       return res.status(400).json({ message: "Invalid secret key for this role." });
-    }
+    }  
+      if(password.length<8){
+        return res.status(400).json({ message: "Password must be at least 8 characters"})
+      }
+      
       // Définir le nombre de tours pour le hachage du mot de passe
       const saltRounds = 10;
 
@@ -342,10 +346,7 @@ const usersContoller = {
           ville,
           disabilityType,
         })
-        if(role === 'user'){
-          newUser.repasRecu= 0;
-          await newUser.save();
-        }
+        
         // Générer le sel et hacher le mot de passe
         bcrypt.genSalt(saltRounds);
         const hashedPassword = await bcrypt.hash(password, salt);
@@ -358,6 +359,7 @@ const usersContoller = {
         const qrData = await generateQRData(newUser._id);
         // Mettez à jour le champ QRData de l'utilisateur avec la valeur générée
         newUser.qrdata = qrData; // Utilisez qrData, pas qrdata
+        newUser.repasRecu = 0;
         await newUser.save();
         
 

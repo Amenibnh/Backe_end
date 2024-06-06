@@ -43,6 +43,7 @@ router.route('/getPatientAssociationDetails/:id').get(verifyToken,associationCon
 router.route('/getAllAssociationsDetails').get(verifyToken,verifyAdminGlobal,associationContoller.getAllAssociationsDetails)
 router.route('/getAssociationId/:associationId').get(verifyToken,verifyAdminGlobal,associationContoller.getAssociationId)
 router.route('/addAssociation').post(verifyToken,verifyAdminGlobal,associationContoller.addAssociation)
+// router.route('/association/:subdomain').get(verifyToken,verifyAdminGlobal,associationContoller.getAssociationBySubdomain)
 router.route('/updateAssociation/:id').put(verifyToken,verifyAdminGlobal,associationContoller.updateAssociation)
 router.route('/deleteAssociation/:id').delete(verifyToken,verifyAdminGlobal,associationContoller.deleteAssociation)
 

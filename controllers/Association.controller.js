@@ -1,8 +1,6 @@
 const Association = require("../model/association");
 const User = require("../model/user");
 const Pass = require("../model/dailyPass");
-const qr = require('qrcode');
-
 const AssociationContoller = {
   getAssociationRepaDetails: async (req, res) => {
     const associationId = req.params.associationId;
@@ -523,36 +521,62 @@ const AssociationContoller = {
       console.error(error);
       res.status(500).json({ message: "Erreur interne du serveur." });
     }
-  }
-  
-  ,
+  } ,
   addAssociation: async (req, res) => {
     try {
-      const { name, description, responsable, admin, ville, region, zip_code } = req.body;
-      const existingAssociation=await Association.findOne({ville});
-      if(existingAssociation){
+      const { name, description, responsable, admin, ville, region, zip_code, fournisseurId, repasDistribues, repasRestants } = req.body;
+  
+      // Check if the association already exists
+      const existingAssociation = await Association.findOne({ ville });
+      if (existingAssociation) {
         return res.status(400).json({ message: "Cette association existe déjà!" });
       }
-
-      const responsableUser = await User.findOne({email:responsable});
-      if(!responsableUser){
+  
+      // Find the responsible and admin users
+      const responsableUser = await User.findOne({ email: responsable });
+      if (!responsableUser) {
         return res.status(400).json({ message: "Le responsable est requis!" });
       }
-      const adminUser = await User.findOne({email:admin});
-      if(!adminUser){
+      const adminUser = await User.findOne({ email: admin });
+      if (!adminUser) {
         return res.status(400).json({ message: "L'admin est requis!" });
       }
+  
+      // Create the new association
       const newAssociation = new Association({
         name,
         description,
-        responsable:responsableUser._id,
-        admin:adminUser._id,
+        responsable: responsableUser._id,
+        admin: adminUser._id,
         ville,
         region,
-        zip_code
+        zip_code,
       });
+  
       const association = await newAssociation.save();
-      res.status(201).json(association);
+  
+      // Update the URL with the association ID after it has been saved
+      association.url = `${ville}.localhost:4200/${association._id}`;
+      await association.save();
+  
+      // Find the fournisseur and update it with the new association
+      const fournisseur = await Fournisseur.findById(fournisseurId);
+      if (!fournisseur) {
+        return res.status(400).json({ message: "Le fournisseur est requis!" });
+      }
+  
+      fournisseur.association.push({
+        association: association._id,
+        repasDistribues: repasDistribues || 0,
+        repasRestants: repasRestants || 0,
+      });
+      await fournisseur.save();
+  
+      // Respond with the created association and its URL
+      res.status(201).json({
+        association,
+        url: association.url,
+      });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Erreur interne du serveur." });

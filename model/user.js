@@ -5,7 +5,7 @@ const association = require("./association");
 const userSchema = new mongoose.Schema({
   firstname: { type: String, required: false },
   lastname: { type: String, required: false },
-  password: { type: String, required: false },
+  password: { type: String,minlength:[8,'Le mot de passe doit avoir au moins 8 caractéres.'], required: false },
   email: { type: String, required: true ,unique:true},
   role: {
     type: String,
@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema({
   repasRecu: {
     type:Number,
         min:[0,'Le pass doit etre superieur ou égale à 0'],
-        default:0,
+        //default:0,
   },
   association:{
     type:mongoose.Schema.Types.ObjectId,

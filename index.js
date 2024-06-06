@@ -3,7 +3,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const morgan=require("morgan")
 const mongoose = require("mongoose");
-
+// const subdomain=require("express-subdomain");
 // const vhost=require('vhost');
 
 // Importer le module cors pour gérery les requêtes Cross-Origin Resource Sharing (CORS)
@@ -17,9 +17,8 @@ const  passwordRoutes = require('./routers/Password.routes')
 const dailypassRoutes=require('./routers/DailyPass.routes')
 const  associationRoutes = require('./routers/Association.routes');
 const  operaitonRoutes = require('./routers/Operation.routes');
-const  siteRoutes = require('./routers/Site.routes');
 const  FournisseurRoutes = require('./routers/Fournisseur.routes');
- const { schedule } = require("./controllers/scheduler");
+const { schedule } = require("./controllers/scheduler");
 //
 
 //create an instance of the Express application
@@ -49,7 +48,6 @@ app.use(passwordRoutes)
 app.use(associationRoutes)
 app.use(dailypassRoutes)
 app.use(operaitonRoutes)
-app.use(siteRoutes)
 app.use(FournisseurRoutes)
 app.use('/uploads', express.static('uploads'))
 
