@@ -71,6 +71,12 @@ const AssociationSchema = new mongoose.Schema({
     type: String,
     required: false,
     unique: true
-  }
+  },
+  // profileImage: { 
+  //   type: String, 
+  //   required: false, 
+  //   default: "default-user-icon-8.jpg"
+  //  },
+
 });
 module.exports = mongoose.model("Association", AssociationSchema);

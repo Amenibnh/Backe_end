@@ -22,6 +22,12 @@ const verifyResponsable = (req, res, next) => {
     }
     next()
 }
+// const verifyFournisseur = (req, res, next) => {
+//     if ((req.user.role !== 'fournisseur') && (req.user.role !== 'adminGlobal')&&(req.user.role !== 'admin')) {
+//         return res.status(403).json({ message: 'Forbidden!' })
+//     }
+//     next()
+// }
 
 
 

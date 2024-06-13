@@ -1,6 +1,10 @@
 const Association = require("../model/association");
 const User = require("../model/user");
 const Pass = require("../model/dailyPass");
+// Importer le module bcrypt pour le hachage des mots de passe
+const bcrypt = require('bcryptjs')
+const qr = require('qrcode'); 
+
 const AssociationContoller = {
   getAssociationRepaDetails: async (req, res) => {
     const associationId = req.params.associationId;
@@ -130,21 +134,30 @@ const AssociationContoller = {
       if (password !== repeatpassword) {
         return res.status(400).json({ success: false, message: "Les mots de passe ne correspondent pas." });
       }
-
+  
+      // Vérifiez si le mot de passe a au moins 8 caractères
+      if (password.length < 8) {
+        return res.status(400).json({ success: false, message: "Le mot de passe doit contenir au moins 8 caractères." });
+      }
+  
+      // Générer le sel et hacher le mot de passe
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+  
       // Créez un nouvel utilisateur
       const newUser = new User({
         firstname,
         lastname,
-        password,
+        password: hashedPassword, // Utilisation du mot de passe haché
         email,
-        role:'user',
+        role: 'user', // Je suppose que le rôle par défaut est 'user'
         address,
         ville,
         phone,
         gender,
         disabilityType
       });
-
+  
       // Enregistrez le nouvel utilisateur dans la base de données
       await newUser.save();
 
@@ -524,7 +537,7 @@ const AssociationContoller = {
   } ,
   addAssociation: async (req, res) => {
     try {
-      const { name, description, responsable, admin, ville, region, zip_code, fournisseurId, repasDistribues, repasRestants } = req.body;
+      const { name, description, responsable, admin, ville, region, zip_code} = req.body;
   
       // Check if the association already exists
       const existingAssociation = await Association.findOne({ ville });
@@ -548,6 +561,7 @@ const AssociationContoller = {
         description,
         responsable: responsableUser._id,
         admin: adminUser._id,
+        profileImage,
         ville,
         region,
         zip_code,
@@ -560,17 +574,17 @@ const AssociationContoller = {
       await association.save();
   
       // Find the fournisseur and update it with the new association
-      const fournisseur = await Fournisseur.findById(fournisseurId);
-      if (!fournisseur) {
-        return res.status(400).json({ message: "Le fournisseur est requis!" });
-      }
+      // const fournisseur = await Fournisseur.findById(fournisseurId);
+      // if (!fournisseur) {
+      //   return res.status(400).json({ message: "Le fournisseur est requis!" });
+      // }
   
-      fournisseur.association.push({
-        association: association._id,
-        repasDistribues: repasDistribues || 0,
-        repasRestants: repasRestants || 0,
-      });
-      await fournisseur.save();
+      // fournisseur.association.push({
+      //   association: association._id,
+      //   repasDistribues: repasDistribues || 0,
+      //   repasRestants: repasRestants || 0,
+      // });
+      // await fournisseur.save();
   
       // Respond with the created association and its URL
       res.status(201).json({
@@ -610,6 +624,7 @@ const AssociationContoller = {
       existingAssociation.ville = req.body.ville || existingAssociation.ville;
       existingAssociation.region = req.body.region || existingAssociation.region;
       existingAssociation.zip_code = req.body.zip_code || existingAssociation.zip_code;
+      existingUser.profileImage = file?.filename ?? existingUser.profileImage
 
       const updatedAssociation = await existingAssociation.save();
 
@@ -648,4 +663,18 @@ const AssociationContoller = {
 //   }
 // }
 
+// Fonction pour générer le QRData
+async function generateQRData(userId) {
+  try {
+    // Générez le QRData en utilisant l'ID de l'utilisateur
+    const qrData = await qr.toDataURL(userId.toString());
+
+    // Retournez le QRData généré
+    return qrData;
+  } catch (error) {
+    // En cas d'erreur, renvoyez null ou gérez l'erreur comme requis
+    console.error("Erreur lors de la génération du QRData :", error);
+    return null;
+  }
+}
 module.exports = AssociationContoller;
