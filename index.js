@@ -67,7 +67,7 @@ mongoose.connect("mongodb://localhost:27017/distribution_repas_handicapes", {
 });
 
 // restaurer le pass à 3 chaque jours
-schedule()
+schedule();
 
 
 //conx serveur

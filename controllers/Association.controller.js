@@ -166,6 +166,8 @@ const AssociationContoller = {
 
       // Mettez à jour le champ QRData de l'utilisateur avec la valeur générée
       newUser.qrdata = qrdata;
+      newUser.repasRecu = 0;
+
       await newUser.save();
 
       // Si l'utilisateur a choisi un pays lors de l'inscription, ajoutez cet utilisateur à la liste des patients de l'association correspondante
