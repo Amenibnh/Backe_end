@@ -36,10 +36,13 @@ const userSchema = new mongoose.Schema({
         min:[0,'Le pass doit etre superieur ou égale à 0'],
         //default:0,
   },
-  association:{
+  association:[
+    {
     type:mongoose.Schema.Types.ObjectId,
      ref:'Association',
+     default:[]
     },
+  ],
   location:{
     latitude:{
       type:Number,

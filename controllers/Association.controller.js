@@ -563,7 +563,6 @@ const AssociationContoller = {
         description,
         responsable: responsableUser._id,
         admin: adminUser._id,
-        profileImage,
         ville,
         region,
         zip_code,
@@ -571,9 +570,12 @@ const AssociationContoller = {
   
       const association = await newAssociation.save();
   
-      // Update the URL with the association ID after it has been saved
-      association.url = `${ville}.localhost:4200/${association._id}`;
-      await association.save();
+     // Get the port for the ville asynchronously
+     const port = await getPortForVille(ville);
+    
+     // Update the URL with the association ID after it has been saved
+     association.url = `${ville.toLowerCase()}.localhost:${port}`;
+     await association.save();
   
       // Find the fournisseur and update it with the new association
       // const fournisseur = await Fournisseur.findById(fournisseurId);
@@ -648,7 +650,9 @@ const AssociationContoller = {
     } catch (error) {
       res.status(500).json({ message: "Erreur interne du serveur." });
     }
-  },
+  }, 
+   
+  
 };
 // // Fonction pour générer le QRData
 // async function generateQRData(userId) {
@@ -677,6 +681,24 @@ async function generateQRData(userId) {
     // En cas d'erreur, renvoyez null ou gérez l'erreur comme requis
     console.error("Erreur lors de la génération du QRData :", error);
     return null;
+  }}
+
+  // Exemple de fonction asynchrone pour récupérer le port en fonction de la ville
+async function getPortForVille(ville) {
+  try {
+      // Exemple: requête asynchrone pour récupérer le port en fonction de la ville
+      if (ville === 'Medenine') {
+          return 4200;
+      } else if (ville === 'Gabes') {
+          return 4400;
+      }
+      // Default port if ville is not recognized
+      return 4200; // Adjust default port as needed
+  } catch (error) {
+      console.error(`Erreur lors de la récupération du port pour ${ville}:`, error);
+      throw error; // Lancer l'erreur pour la gérer plus haut si nécessaire
   }
 }
+
+
 module.exports = AssociationContoller;

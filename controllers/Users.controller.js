@@ -10,6 +10,23 @@ const qr = require('qrcode');
 const usersContoller = {
   login: async (req, res) => {
     try {
+      const origin = req.headers.origin;
+    let subdomain = null;
+
+    if (origin) {
+      // Extract the hostname from the origin
+      const url = new URL(origin);
+      const host = url.hostname;
+
+      // Split the host and extract the subdomain
+      const hostParts = host.split('.');
+      if (hostParts.length > 1) {
+        subdomain = hostParts[0];
+      }
+    }
+
+    console.log("Subdomain extracted:", subdomain);
+    
       const { password, email } = req.body
       // console.log(email)
 
@@ -24,6 +41,9 @@ const usersContoller = {
       if (!passwordMatch) {
         return res.status(401).json({ message: 'Mot de passe incorrect' });
       }
+       
+      
+
       // Mettre à jour l'activité de la dernière connexion de l'utilisateur
       user.activity = new Date();
       user.sessions += 1;
