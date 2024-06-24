@@ -40,7 +40,16 @@ const userSchema = new mongoose.Schema({
     type:mongoose.Schema.Types.ObjectId,
      ref:'Association',
     },
-  
+  location:{
+    latitude:{
+      type:Number,
+       required:false
+      },
+    longitude:{
+      type:Number, 
+      required:false
+    },
+  }
 
 });
 

@@ -62,12 +62,13 @@ mongoose.connect("mongodb://localhost:27017/distribution_repas_handicapes", {
   
 }).then(() => {
   console.log('Database connected successfully.');
+
 }).catch((err) => {
   console.log(`Error while connecting to database.${err}`);
 });
+  // restaurer le pass à 3 chaque jours
+  schedule();
 
-// restaurer le pass à 3 chaque jours
-schedule();
 
 
 //conx serveur
