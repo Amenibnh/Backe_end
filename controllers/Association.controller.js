@@ -539,7 +539,7 @@ const AssociationContoller = {
   } ,
   addAssociation: async (req, res) => {
     try {
-      const { name, description, responsable, admin, ville, region, zip_code} = req.body;
+      const { name, description, responsable, admin,adminGlobal, ville, region, zip_code} = req.body;
   
       // Check if the association already exists
       const existingAssociation = await Association.findOne({ ville });
@@ -556,6 +556,10 @@ const AssociationContoller = {
       if (!adminUser) {
         return res.status(400).json({ message: "L'admin est requis!" });
       }
+      const adminGlobalUser = await User.findOne({ email: adminGlobal });
+      if (!adminGlobalUser) {
+        return res.status(400).json({ message: "L'admin est requis!" });
+      }
   
       // Create the new association
       const newAssociation = new Association({
@@ -563,6 +567,7 @@ const AssociationContoller = {
         description,
         responsable: responsableUser._id,
         admin: adminUser._id,
+        adminGlobal: adminGlobalUser._id,
         ville,
         region,
         zip_code,
@@ -684,19 +689,61 @@ async function generateQRData(userId) {
   }}
 
   // Exemple de fonction asynchrone pour récupérer le port en fonction de la ville
+// async function getPortForVille(ville) {
+//   try {
+//       // Exemple: requête asynchrone pour récupérer le port en fonction de la ville
+//       if (ville === 'Medenine') {
+//           return 4200;
+//       } else if (ville === 'Gabes') {
+//           return 4400;
+//       }
+//       // Default port if ville is not recognized
+//       return 4200; // Adjust default port as needed
+//   } catch (error) {
+//       console.error(`Erreur lors de la récupération du port pour ${ville}:`, error);
+//       throw error; // Lancer l'erreur pour la gérer plus haut si nécessaire
+//   }
+// }
 async function getPortForVille(ville) {
   try {
-      // Exemple: requête asynchrone pour récupérer le port en fonction de la ville
-      if (ville === 'Medenine') {
-          return 4200;
-      } else if (ville === 'Gabes') {
-          return 4400;
-      }
-      // Default port if ville is not recognized
-      return 4200; // Adjust default port as needed
+    // Mapping des villes aux ports correspondants
+    const villePortMap = {
+      "Medenine": 4200,
+      "Gabes": 4400,
+      "Ariana": 4300,
+      "Beja": 4500,
+      "Ben Arous": 4600,
+      "Bizerte": 4700,
+      "Gafsa": 4800,
+      "Jendouba": 4900,
+      "Kairouan": 5000,
+      "Kasserine": 5100,
+      "Kebili": 5200,
+      "Le Kef": 5300,
+      "Mahdia": 5400,
+      "La Manouba": 5500,
+      "Monastir": 5600,
+      "Nabeul": 5700,
+      "Sfax": 5800,
+      "Sidi Bouzid": 5900,
+      "Siliana": 6000,
+      "Sousse": 6100,
+      "Tataouine": 6200,
+      "Tozeur": 6300,
+      "Tunis": 6400,
+      "Zaghouan": 6500,
+    };
+
+    // Vérifier si la ville est dans la carte et retourner le port correspondant
+    if (villePortMap.hasOwnProperty(ville)) {
+      return villePortMap[ville];
+    } else {
+      // Si la ville n'est pas trouvée, retourner un port par défaut
+      return 4200; // ou tout autre port par défaut que vous souhaitez définir
+    }
   } catch (error) {
-      console.error(`Erreur lors de la récupération du port pour ${ville}:`, error);
-      throw error; // Lancer l'erreur pour la gérer plus haut si nécessaire
+    console.error(`Erreur lors de la récupération du port pour ${ville}:`, error);
+    throw error; // Lancer l'erreur pour la gérer plus haut si nécessaire
   }
 }
 
