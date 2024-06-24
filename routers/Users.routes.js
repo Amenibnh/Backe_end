@@ -26,6 +26,8 @@ router.route('/updateUser/:userId').put(verifyToken,verifyAdmin,uploadImages.sin
 
 //login
 router.route('/login').post(usersContoller.login)
+//login flutter
+router.route('/login2').post(usersContoller.login2)
 //sign up
 router.route('/register').post(usersContoller.register)
 //logout

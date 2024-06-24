@@ -220,6 +220,98 @@ const usersContoller = {
       return res.status(500).json({ message: error.message });
     }
   },
+  login2: async (req, res) => {
+    try {
+      const { password, email } = req.body;
+      const user = await User.findOne({ email });
+  
+      if (!user) {
+        console.log("User not found");
+        return res.status(404).json({ message: "user not found" });
+      }
+  
+      // Check if password is correct
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      if (!passwordMatch) {
+        return res.status(401).json({ message: "Incorrect password" });
+      }
+      
+        // Update user's last login activity
+        user.activity = new Date();
+        user.sessions += 1;
+        user.status = "connected";
+  
+        // Date handling
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth() + 1;
+        const monthsRemaining = 12 - currentMonth;
+  
+        // Calculate usage percentage for the current month
+        const usagePercentage = Math.round(
+          (user.sessions / (monthsRemaining + 1)) * 100
+        );
+  
+        // Cap usage percentage at 100%
+        const cappedUsagePercentage = Math.min(usagePercentage, 100);
+  
+        // Reset sessions to zero if it is the beginning of a new month
+        if (currentDate.getDate() === 1) {
+          user.sessions = 0;
+        }
+  
+        user.usage = cappedUsagePercentage;
+  
+        const options = { day: "2-digit", month: "2-digit", year: "numeric" };
+        const lastDayOfMonth = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth() + 1,
+          0
+        );
+        const firstDayOfMonth = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          1
+        );
+  
+        const lastDayOfMonthString = lastDayOfMonth.toLocaleDateString("fr-FR", options);
+        const FirstDayOfMonthString = firstDayOfMonth.toLocaleDateString("fr-FR", options);
+  
+        user.period = `${FirstDayOfMonthString} - ${lastDayOfMonthString}`;
+  
+        await user.save();
+  
+        // Use a secret key to sign the token
+        const secretKey = "your-secret-key";
+        const token = jwt.sign(
+          {
+            userId: user._id,
+            role: user.role,
+            usage: user.usage,
+            period: user.period,
+          },
+          secretKey
+        );
+  
+        const userResponse = {
+          email: user.email,
+          firstname: user.firstname,
+          association: user.association ? user.association._id : null,
+          phone: user.phone,
+          profileImage: user.profileImage,
+          ville: user.ville,
+          registered: user.registered,
+        };
+  
+        return res.status(202).json({
+          user: userResponse,
+          token,
+          role: user.role,
+        });
+  
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  },
   getTotalRepaPerMonth: async (req, res) => {
     try {
       const result = await User.aggregate([
@@ -380,6 +472,18 @@ const usersContoller = {
       existingUser.ville = req.body.ville || existingUser.ville;
       existingUser.phone = req.body.phone || existingUser.phone;
       existingUser.profileImage = file?.filename ?? existingUser.profileImage;
+
+      if (req.body.latitude && req.body.longitude) {
+        console.log("Received latitude:", req.body.latitude, "and longitude:", req.body.longitude); 
+        existingUser.location = {
+          type: 'Point',
+          coordinates: [
+            parseFloat(req.body.longitude), 
+            parseFloat(req.body.latitude)
+          ],
+        };
+      }
+      
       // Enregistrer le user mis à jour dans la base de données
       const updatedUser = await existingUser.save();
       // Renvoyer le user mis à jour en réponse

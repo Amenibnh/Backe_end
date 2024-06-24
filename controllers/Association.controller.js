@@ -708,8 +708,8 @@ async function getPortForVille(ville) {
   try {
     // Mapping des villes aux ports correspondants
     const villePortMap = {
-      "Medenine": 4200,
-      "Gabes": 4400,
+      "Gabes": 4200,
+      "Medenine": 4400,
       "Ariana": 4300,
       "Beja": 4500,
       "Ben Arous": 4600,
