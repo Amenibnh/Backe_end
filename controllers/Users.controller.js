@@ -447,52 +447,47 @@ const usersContoller = {
       res.status(500).json({ message: "Internal server error" });
     }
   },
+updateUser: async (req, res) => {
+  const { file } = req;
+  const userId = req.params.userId ?? req.user.userId;
+  const { latitude, longitude } = req.body;
+  console.log(`Updating location for user ${userId}: latitude=${latitude}, longitude=${longitude}`);
 
-  updateUser: async (req, res) => {
-    const { file } = req;
-    // Récupérer l'ID du user à partir des paramètres de la requête
-    const userId = req.params.userId ?? req.user.userId;
-    try {
-      // Rechercher le user par son ID
-      const existingUser = await User.findById(userId);
-
-      // Vérifier si le user existe
-      if (!existingUser) {
-        return res.status(404).json({ message: "user not found" });
-      }
-
-      // Mettre à jour les propriétés du user
-      existingUser.firstname = req.body.firstname || existingUser.firstname;
-      existingUser.lastname = req.body.lastname || existingUser.lastname;
-      existingUser.password = req.body.password || existingUser.password;
-      existingUser.repeatpassword =
-        req.body.repeatpassword || existingUser.repeatpassword;
-      existingUser.email = req.body.email || existingUser.email;
-      existingUser.role = req.body.role || existingUser.role;
-      existingUser.ville = req.body.ville || existingUser.ville;
-      existingUser.phone = req.body.phone || existingUser.phone;
-      existingUser.profileImage = file?.filename ?? existingUser.profileImage;
-
-      if (req.body.latitude && req.body.longitude) {
-        console.log("Received latitude:", req.body.latitude, "and longitude:", req.body.longitude); 
-        existingUser.location = {
-          type: 'Point',
-          coordinates: [
-            parseFloat(req.body.longitude), 
-            parseFloat(req.body.latitude)
-          ],
-        };
-      }
-      
-      // Enregistrer le user mis à jour dans la base de données
-      const updatedUser = await existingUser.save();
-      // Renvoyer le user mis à jour en réponse
-      res.status(200).json({ updatedUser });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: " Server Error" });
+  try {
+    const existingUser = await User.findById(userId);
+    if (!existingUser) {
+      return res.status(404).json({ message: "User not found" });
     }
-  },
+
+    // Mise à jour des propriétés de l'utilisateur
+    existingUser.firstname = req.body.firstname || existingUser.firstname;
+    existingUser.lastname = req.body.lastname || existingUser.lastname;
+    existingUser.password = req.body.password || existingUser.password;
+    existingUser.repeatpassword = req.body.repeatpassword || existingUser.repeatpassword;
+    existingUser.email = req.body.email || existingUser.email;
+    existingUser.role = req.body.role || existingUser.role;
+    existingUser.ville = req.body.ville || existingUser.ville;
+    existingUser.phone = req.body.phone || existingUser.phone;
+    existingUser.profileImage = file?.filename ?? existingUser.profileImage;
+
+    if (req.body.latitude && req.body.longitude) {
+      existingUser.location = {
+        type: 'Point',
+        coordinates: [ 
+          parseFloat(longitude),
+          parseFloat(latitude)
+        ],
+      };
+    }
+    
+    const updatedUser = await existingUser.save();
+    res.status(200).json({ updatedUser });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server Error" });
+  }
+}
+,
 
   getUserId: async (req, res) => {
     const userId = req.params.userId ?? req.user.userId;
